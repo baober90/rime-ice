@@ -1,0 +1,189 @@
+# Rime schema
+# encoding: utf-8
+
+# 依赖拼音方案
+dep: &dep rime_ice
+
+schema:
+  schema_id: stars
+  name: 星辰双拼
+  version: "3.0"
+  author:
+    - 单单 <me@nopdan.com>
+  description: |
+    qq交流群：311818880
+  dependencies:
+    #    - melt_eng
+    #    - liangfen
+    - stroke
+    - *dep
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [中文, 西文]
+  - name: full_shape
+    reset: 0
+    states: [半角, 全角]
+  - name: zh_simp
+    reset: 1
+    states: [漢字, 汉字]
+  - name: ascii_punct
+    states: [。，, ．，]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    #- lua_translator@date_translator  #加载日期脚本(rime.lua)
+    #- lua_translator@number_translator  #加载数字脚本(rime.lua)
+    #- lua_translator@time_translator  #加载时间脚本
+    - script_translator
+    - reverse_lookup_translator
+  filters:
+    - simplifier
+    - uniquifier
+
+speller:
+  alphabet: "qwertyuiopasdfghjklzxcvbnm"
+  initials: "qwertyuiopasdfghjklzxcvbnm"
+  delimiter: " '"
+  algebra:
+    - xform/^([nl])ue$/$1ve/
+    # 声母
+    - xform/^ya/Jia/
+    - xform/^ye$/Jie/
+    - xform/^you$/Jiu/
+    - xform/^yong$/Jiong/
+    - xform/^y/J/
+    - xform/^w/W/
+    # 零声母
+    - xform/^([aeo].*)/Z$1/
+    # 左
+    - xform/^zh/E/
+    - xform/^ch/S/
+    - xform/^sh/D/
+    - xform/^r/A/
+    - xform/^z/V/
+    - xform/^c/C/
+    - xform/^s/T/
+    - xform/^g/G/
+    - xform/^h/F/
+    - xform/^k/R/
+    - xform/^f/X/
+    # 右
+    - xform/^j/U/
+    - xform/^q/Y/
+    - xform/^x/H/
+    - xform/^d/K/
+    - xform/^t/L/
+    - xform/^l/I/
+    - xform/^n/O/
+    - xform/^b/N/
+    - derive/^N/B/
+    - xform/^p/P/
+    - xform/^m/M/
+    # 韵母
+    - xform/iong$/S/
+    - xform/iang$/V/
+    - xform/ian$/C/
+    - xform/iao$/B/
+    - xform/ia$/F/
+    - xform/ing$/X/
+    - xform/in$/A/
+    - xform/ie$/T/
+    - xform/iu$/G/
+    # u
+    - xform/uang$/D/
+    - xform/uan$/W/
+    - xform/uai$/R/
+    - xform/ua$/E/
+    - xform/ui$/A/
+    - xform/un$/Q/
+    - xform/uo$/N/
+    - xform/ue$/E/
+    - xform/ve$/J/
+    #
+    - xform/ong$/L/
+    - xform/ou$/Y/
+    - xform/ang$/K/
+    - xform/ao$/S/
+    - xform/eng$/O/
+    - xform/er$/I/
+
+    - derive/^([NPMKL])an$/$1V/
+    - xform/an$/H/
+    - derive/ai$/Z/
+    - xform/ai$/P/
+    - xform/^([BNPMKL])ei$/$1G/
+    - xform/ei$/I/
+    - xform/^([NPMKLOI])en$/$1W/
+    - xform/en$/M/
+
+    - xform/v$/U/
+    - xform/o$/N/
+    - xform/a$/F/
+    - xform/^([YUIOPHJKLNM])u$/$1R/
+    - xform/u$/U/
+    - xform/^([BESDAVCT])i$/$1I/
+    - xform/i$/D/
+    - xform/^([MKLOI])e$/$1E/
+    - xform/e$/J/
+
+    - xlit/QWERTYUIOPASDFGHJKLZXCVBNM/qwertyuiopasdfghjklzxcvbnm/
+
+translator:
+  dictionary: *dep
+  prism: stars
+  enable_completion: true #逐码提示
+  disable_user_dict_for_patterns:
+    - "^.*$"
+#  preedit_format:
+#    - xform/([nl])v/$1ü/
+#    - xform/([nl])ue/$1üe/
+#    - xform/([jqxy])v/$1u/
+
+reverse_lookup:
+  dictionary: stroke
+  enable_completion: true
+  prefix: "`"
+  suffix: "'"
+  tips: 〔笔画〕
+  preedit_format:
+    - xlit/hspnz/一丨丿丶乙/
+
+simplifier:
+  option_name: zh_simp
+
+punctuator:
+  import_preset: default
+
+key_binder:
+  import_preset: default
+  bindings:
+    #    - { when: always, accept: Control+Shift+4, toggle: zh_simp }
+    #    - { when: always, accept: Control+Shift+dollar, toggle: zh_simp }
+    - { when: has_menu, accept: semicolon, send: 2 }
+
+recognizer:
+  patterns:
+    reverse_lookup: "`[a-z]*'?$"
+#    punct: '^/([0-9]0?|[A-Za-z]+)$'
+#    punct: "^[;uo]([0-9]0?|[a-z]+)$"
+
+menu:
+  page_size: 5 #選單每䈎顯示個數
