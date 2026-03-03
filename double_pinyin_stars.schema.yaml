@@ -1,0 +1,180 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: double_pinyin_stars
+  name: 星辰双拼-无容错
+  version: "3.0"
+  author:
+    - 单单 <37389732@qq.com>
+  description: |
+    星辰双拼 - 最好的乱序双拼方案
+    qq交流群：311818880
+  dependencies:
+    - &dep rime_ice # 依赖的拼音方案
+    - stroke
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [中文, 西文]
+  - name: full_shape
+    reset: 0
+    states: [半角, 全角]
+  - name: zh_simp
+    reset: 1
+    states: [漢字, 汉字]
+  - name: ascii_punct
+    states: [。，, ．，]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    #- lua_translator@date_translator  #加载日期脚本(rime.lua)
+    #- lua_translator@number_translator  #加载数字脚本(rime.lua)
+    #- lua_translator@time_translator  #加载时间脚本
+    - script_translator
+    - reverse_lookup_translator
+  filters:
+    - simplifier
+    - uniquifier
+
+speller:
+  alphabet: "qwertyuiopasdfghjklzxcvbnm"
+  initials: "qwertyuiopasdfghjklzxcvbnm"
+  delimiter: " '"
+  algebra:
+    # 韵母预处理
+    - xform/^([nl])ue$/$1ve/
+    - xform/^ya/yia/ # ya, yao, yan, yang
+    - xform/^ye$/yie/
+    - xform/^you$/yiu/
+    - xform/^yong$/yiong/
+    # 零声母
+    - xform/^y/Ⓙ/
+    # - xform/^w/Ⓦ/
+    - xform/^([aeo].*)/Ⓩ$1/
+    # 左
+    - xform/^zh/Ⓔ/
+    - xform/^ch/Ⓢ/
+    - xform/^sh/Ⓓ/
+    - xform/^r/Ⓐ/
+    - xform/^z/Ⓥ/
+    # - xform/^c/Ⓒ/
+    - xform/^s/Ⓣ/
+    # - xform/^g/Ⓖ/
+    - xform/^k/Ⓡ/
+    - xform/^h/Ⓕ/
+    - xform/^f/Ⓧ/
+    # 右
+    - xform/^j/Ⓤ/
+    - xform/^q/Ⓨ/
+    - xform/^x/Ⓗ/
+    - xform/^d/Ⓚ/
+    - xform/^t/Ⓛ/
+    - xform/^n/Ⓞ/
+    - xform/^l/Ⓘ/
+    - xform/^b/Ⓝ/
+    # - xform/^p/Ⓟ/
+    # - xform/^m/Ⓜ/
+    # 韵母
+    - xform/iong$/Ⓢ/
+    - xform/iang$/Ⓥ/
+    - xform/ian$/Ⓒ/
+    - xform/iao$/Ⓑ/
+    - xform/ia$/Ⓕ/
+    - xform/ing$/Ⓧ/
+    - xform/in$/Ⓐ/
+    - xform/ie$/Ⓣ/
+    - xform/iu$/Ⓖ/
+    # u
+    - xform/uang$/Ⓓ/
+    - xform/uan$/Ⓦ/
+    - xform/uai$/Ⓡ/
+    - xform/ua$/Ⓔ/
+    - xform/ui$/Ⓐ/
+    - xform/un$/Ⓠ/
+    - xform/uo$/Ⓝ/
+    - xform/ue$/Ⓔ/
+    - xform/ve$/Ⓙ/
+    #
+    - xform/ong$/Ⓛ/
+    - xform/ou$/Ⓨ/
+    - xform/ang$/Ⓚ/
+    - xform/ao$/Ⓢ/
+    - xform/eng$/Ⓞ/
+    - xform/er$/Ⓘ/
+
+    # [ⓃpmⓀⓁ] 不支持特殊字符匹配，只能像下面这样写
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ)an$/$1Ⓥ/
+    - xform/an$/Ⓗ/
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ)ei$/$1Ⓖ/
+    - xform/ei$/Ⓘ/
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ|Ⓞ|Ⓘ)en$/$1Ⓦ/
+    - xform/en$/Ⓜ/
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ|Ⓞ|Ⓘ)ai$/$1Ⓩ/
+    - xform/ai$/Ⓟ/
+
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ|Ⓞ|Ⓘ|Ⓤ|Ⓨ|Ⓗ|Ⓙ)u$/$1Ⓡ/
+    - xform/^(Ⓝ|p|m|Ⓚ|Ⓛ|Ⓞ|Ⓘ|Ⓤ|Ⓨ|Ⓗ|Ⓙ)i$/$1Ⓓ/
+    - xform/^(Ⓔ|Ⓢ|Ⓓ|Ⓐ|Ⓥ|c|Ⓣ|g|Ⓡ|Ⓕ)e$/$1Ⓙ/
+    - xform/v$/Ⓤ/
+    - xform/o$/Ⓝ/
+    - xform/a$/Ⓕ/
+
+    # - xlit/QWERTYUIOPASDFGHJKLZXCVBNM/qwertyuiopasdfghjklzxcvbnm/
+    - xlit/ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ/abcdefghijklmnopqrstuvwxyz/
+
+translator:
+  dictionary: *dep
+  prism: double_pinyin_stars
+  enable_completion: true #逐码提示
+  disable_user_dict_for_patterns:
+    - "^.*$"
+#  preedit_format:
+#    - xform/([nl])v/$1ü/
+#    - xform/([nl])ue/$1üe/
+#    - xform/([jqxy])v/$1u/
+
+reverse_lookup:
+  dictionary: stroke
+  enable_completion: true
+  prefix: "`"
+  suffix: "'"
+  tips: 〔笔画〕
+  preedit_format:
+    - xlit/hspnz/一丨丿丶乙/
+
+simplifier:
+  option_name: zh_simp
+
+punctuator:
+  import_preset: default
+
+key_binder:
+  import_preset: default
+  bindings:
+    #    - { when: always, accept: Control+Shift+4, toggle: zh_simp }
+    #    - { when: always, accept: Control+Shift+dollar, toggle: zh_simp }
+    - { when: has_menu, accept: semicolon, send: 2 }
+
+recognizer:
+  patterns:
+    reverse_lookup: "`[a-z]*'?$"
+#    punct: '^/([0-9]0?|[A-Za-z]+)$'
+#    punct: "^[;uo]([0-9]0?|[a-z]+)$"
